@@ -1,36 +1,39 @@
-﻿using BulkyBookWeb.Data;
-using Microsoft.AspNetCore.Mvc;
-using BulkyBook.DataAccess.Repository.IRepository;
+﻿using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBookWeb.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class CategoryController : Controller
+    public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CategoryController(IUnitOfWork unitOfWork)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
-            List<Category> objcategorylist = _unitOfWork.Category.GetAll().ToList();
-            return View(objcategorylist);
+            List<Product> objProductList = _unitOfWork.Product.GetAll().ToList();
+
+            return View(objProductList);
         }
+
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Category obj)
+        public IActionResult Create(Product obj)
         {
-            _unitOfWork.Category.Add(obj);
+            _unitOfWork.Product.Add(obj);
             _unitOfWork.Save();
-            TempData["success"] = "Category created successfully!";
-            return RedirectToAction("Index", "Category");
+            TempData["success"] = "Product created successfully!";
+            return RedirectToAction("Index");
         }
+
         [HttpGet]
         public IActionResult Edit(int? id)
         {
@@ -41,23 +44,23 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            Category? categoryFronDb = _unitOfWork.Category.Get(u => u.Id == id);
-            if (categoryFronDb == null)
+            Product? productFronDb = _unitOfWork.Product.Get(u => u.Id == id);
+            if (productFronDb == null)
             {
                 return NotFound();
             }
-            return View(categoryFronDb);
+            return View(productFronDb);
         }
 
 
         [HttpPost]
-        public IActionResult Edit(Category obj)
+        public IActionResult Edit(Product obj)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Category.Update(obj);
+                _unitOfWork.Product.Update(obj);
                 _unitOfWork.Save();
-                TempData["success"] = "Category updated successfully!";
+                TempData["success"] = "Product updated successfully!";
                 return RedirectToAction("Index");
 
             }
@@ -71,31 +74,32 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            Category? categoryfromDb = _unitOfWork.Category.Get(u => u.Id == id);
-            if (categoryfromDb == null)
+            Product? productFronDb = _unitOfWork.Product.Get(u => u.Id == id);
+            if (productFronDb == null)
             {
                 return NotFound();
             }
-            return View(categoryfromDb);
+            return View(productFronDb);
         }
 
 
         [HttpPost]
         [ActionName("Delete")]
-        public IActionResult DeletePot(int? id)
+        public IActionResult DeletePost(int? id)
         {
-            Category? obj = _unitOfWork.Category.Get(u => u.Id == id);
+            Product? obj = _unitOfWork.Product.Get(u => u.Id == id);
             if (obj == null)
             {
                 return NotFound(id);
             }
 
-            _unitOfWork.Category.Remove(obj);
+            _unitOfWork.Product.Remove(obj);
             _unitOfWork.Save();
-            TempData["success"] = "Category deleted successfully!";
+            TempData["success"] = "Product deleted successfully!";
             return RedirectToAction("Index");
 
 
         }
+
     }
 }
